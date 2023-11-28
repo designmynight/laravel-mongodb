@@ -100,7 +100,13 @@ abstract class Model extends BaseModel
     {
         // Convert UTCDateTime instances.
         if ($value instanceof UTCDateTime) {
-            return Date::createFromTimestampMs($value->toDateTime()->format('Uv'));
+            $date = $value->toDateTime();
+
+            $seconds = $date->format('U');
+            $milliseconds = abs($date->format('v'));
+            $timestampMs = sprintf('%d%03d', $seconds, $milliseconds);
+
+            return Date::createFromTimestampMs($timestampMs);
         }
 
         return parent::asDateTime($value);
@@ -487,6 +493,17 @@ abstract class Model extends BaseModel
         }
 
         return $relations;
+    }
+
+    /**
+     * Checks if column exists on a table.  As this is a document model, just return true.  This also
+     * prevents calls to non-existent function Grammar::compileColumnListing()
+     * @param string $key
+     * @return bool
+     */
+    protected function isGuardableColumn($key)
+    {
+        return true;
     }
 
     /**

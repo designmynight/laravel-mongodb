@@ -8,19 +8,24 @@ use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\LazyCollection;
 use Illuminate\Support\Str;
 use Jenssegers\Mongodb\Connection;
-use MongoCollection;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectID;
 use MongoDB\BSON\Regex;
 use MongoDB\BSON\UTCDateTime;
+use RuntimeException;
 
+/**
+ * Class Builder
+ * @package Jenssegers\Mongodb\Query
+ */
 class Builder extends BaseBuilder
 {
     /**
      * The database collection.
-     * @var MongoCollection
+     * @var \MongoDB\Collection
      */
     protected $collection;
 
@@ -53,13 +58,6 @@ class Builder extends BaseBuilder
      * @var bool
      */
     public $paginating = false;
-
-    /**
-     * Indicate if we should return the cursor from a get().
-     *
-     * @var bool
-     */
-    public $cursor = false;
 
     /**
      * All of the available clause operators.
@@ -217,11 +215,24 @@ class Builder extends BaseBuilder
     }
 
     /**
+     * @inheritdoc
+     */
+    public function cursor($columns = [])
+    {
+        $result =  $this->getFresh($columns, true);
+        if ($result instanceof LazyCollection) {
+            return $result;
+        }
+        throw new RuntimeException("Query not compatible with cursor");
+    }
+
+    /**
      * Execute the query as a fresh "select" statement.
      * @param array $columns
-     * @return array|static[]|Collection
+     * @param bool $returnLazy
+     * @return array|static[]|Collection|LazyCollection
      */
-    public function getFresh($columns = [])
+    public function getFresh($columns = [], $returnLazy = false)
     {
         // If no columns have been specified for the select statement, we will set them
         // here to either the passed columns, or the standard default of retrieving
@@ -409,9 +420,12 @@ class Builder extends BaseBuilder
             // Execute query and get MongoCursor
             $cursor = $this->collection->find($wheres, $options);
 
-            // Just return the cursor if required
-            if ($this->cursor) {
-                return $cursor;
+            if ($returnLazy) {
+                return LazyCollection::make(function () use ($cursor) {
+                    foreach ($cursor as $item) {
+                        yield $item;
+                    }
+                });
             }
 
             // Return results as an array with numeric keys
@@ -493,18 +507,6 @@ class Builder extends BaseBuilder
         }
 
         return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function cursor($columns = [])
-    {
-        $this->cursor = true;
-
-        foreach ($this->get($columns) as $doc) {
-            yield $doc;
-        }
     }
 
     /**
@@ -722,15 +724,11 @@ class Builder extends BaseBuilder
     /**
      * @inheritdoc
      */
-    public function truncate()
+    public function truncate(): bool
     {
-        $options = [
-            'typeMap' => ['root' => 'object', 'document' => 'object'],
-        ];
+        $result = $this->collection->deleteMany([]);
 
-        $result = $this->collection->drop($options);
-
-        return (1 == (int) $result->ok);
+        return (1 === (int) $result->isAcknowledged());
     }
 
     /**
