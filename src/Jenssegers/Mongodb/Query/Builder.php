@@ -709,7 +709,7 @@ class Builder extends BaseBuilder
     /**
      * @inheritdoc
      */
-    public function from($collection)
+    public function from($collection, $as = null)
     {
         if ($collection) {
             $this->collection = $this->connection->getCollection($collection);
