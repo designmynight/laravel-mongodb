@@ -5,6 +5,7 @@ namespace Jenssegers\Mongodb\Eloquent;
 use Closure;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Jenssegers\Mongodb\Helpers\QueriesRelationships;
+use Jenssegers\Mongodb\Relations\EmbedsOneOrMany;
 use MongoDB\Driver\Cursor;
 use MongoDB\Model\BSONDocument;
 
