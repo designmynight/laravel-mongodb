@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 class GeospatialTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -43,7 +45,7 @@ class GeospatialTest extends TestCase
         ]);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         Schema::drop('locations');
     }
@@ -53,28 +55,30 @@ class GeospatialTest extends TestCase
         $locations = Location::where('location', 'geoWithin', [
             '$geometry' => [
                 'type' => 'Polygon',
-                'coordinates' => [[
+                'coordinates' => [
                     [
-                        -0.1450383,
-                        51.5069158,
+                        [
+                            -0.1450383,
+                            51.5069158,
+                        ],
+                        [
+                            -0.1367563,
+                            51.5100913,
+                        ],
+                        [
+                            -0.1270247,
+                            51.5013233,
+                        ],
+                        [
+                            -0.1460866,
+                            51.4952136,
+                        ],
+                        [
+                            -0.1450383,
+                            51.5069158,
+                        ],
                     ],
-                    [
-                        -0.1367563,
-                        51.5100913,
-                    ],
-                    [
-                        -0.1270247,
-                        51.5013233,
-                    ],
-                    [
-                        -0.1460866,
-                        51.4952136,
-                    ],
-                    [
-                        -0.1450383,
-                        51.5069158,
-                    ],
-                ]],
+                ],
             ],
         ]);
 
@@ -104,7 +108,7 @@ class GeospatialTest extends TestCase
                         51.5078646,
                     ],
                 ],
-            ]
+            ],
         ]);
 
         $this->assertEquals(1, $locations->count());

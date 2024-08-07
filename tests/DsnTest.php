@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class DsnTest extends TestCase
 {
     public function test_dsn_works()

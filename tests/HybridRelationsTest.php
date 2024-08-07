@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
+use Illuminate\Database\MySqlConnection;
+
 class HybridRelationsTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -11,7 +15,7 @@ class HybridRelationsTest extends TestCase
         MysqlRole::executeSchema();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         MysqlUser::truncate();
         MysqlBook::truncate();
@@ -21,13 +25,13 @@ class HybridRelationsTest extends TestCase
     public function testMysqlRelations()
     {
         $user = new MysqlUser;
-        $this->assertInstanceOf('MysqlUser', $user);
-        $this->assertInstanceOf('Illuminate\Database\MySqlConnection', $user->getConnection());
+        $this->assertInstanceOf(MysqlUser::class, $user);
+        $this->assertInstanceOf(MySqlConnection::class, $user->getConnection());
 
         // Mysql User
-        $user->name = "John Doe";
+        $user->name = 'John Doe';
         $user->save();
-        $this->assertInternalType('int', $user->id);
+        $this->assertIsInt($user->id);
 
         // SQL has many
         $book = new Book(['title' => 'Game of Thrones']);
@@ -51,7 +55,7 @@ class HybridRelationsTest extends TestCase
 
         // MongoDB User
         $user = new User;
-        $user->name = "John Doe";
+        $user->name = 'John Doe';
         $user->save();
 
         // MongoDB has many
@@ -79,13 +83,13 @@ class HybridRelationsTest extends TestCase
     {
         $user = new MysqlUser;
         $otherUser = new MysqlUser;
-        $this->assertInstanceOf('MysqlUser', $user);
-        $this->assertInstanceOf('Illuminate\Database\MySqlConnection', $user->getConnection());
-        $this->assertInstanceOf('MysqlUser', $otherUser);
-        $this->assertInstanceOf('Illuminate\Database\MySqlConnection', $otherUser->getConnection());
+        $this->assertInstanceOf(MysqlUser::class, $user);
+        $this->assertInstanceOf(MySqlConnection::class, $user->getConnection());
+        $this->assertInstanceOf(MysqlUser::class, $otherUser);
+        $this->assertInstanceOf(MySqlConnection::class, $otherUser->getConnection());
 
         //MySql User
-        $user->name = "John Doe";
+        $user->name = 'John Doe';
         $user->id = 2;
         $user->save();
         // Other user
@@ -93,8 +97,8 @@ class HybridRelationsTest extends TestCase
         $otherUser->id = 3;
         $otherUser->save();
         // Make sure they are created
-        $this->assertInternalType('int', $user->id);
-        $this->assertInternalType('int', $otherUser->id);
+        $this->assertIsInt($user->id);
+        $this->assertIsInt($otherUser->id);
         // Clear to start
         $user->books()->truncate();
         $otherUser->books()->truncate();
@@ -133,13 +137,13 @@ class HybridRelationsTest extends TestCase
     {
         $user = new MysqlUser;
         $otherUser = new MysqlUser;
-        $this->assertInstanceOf('MysqlUser', $user);
-        $this->assertInstanceOf('Illuminate\Database\MySqlConnection', $user->getConnection());
-        $this->assertInstanceOf('MysqlUser', $otherUser);
-        $this->assertInstanceOf('Illuminate\Database\MySqlConnection', $otherUser->getConnection());
+        $this->assertInstanceOf(MysqlUser::class, $user);
+        $this->assertInstanceOf(MySqlConnection::class, $user->getConnection());
+        $this->assertInstanceOf(MysqlUser::class, $otherUser);
+        $this->assertInstanceOf(MySqlConnection::class, $otherUser->getConnection());
 
         //MySql User
-        $user->name = "John Doe";
+        $user->name = 'John Doe';
         $user->id = 2;
         $user->save();
         // Other user
@@ -147,8 +151,8 @@ class HybridRelationsTest extends TestCase
         $otherUser->id = 3;
         $otherUser->save();
         // Make sure they are created
-        $this->assertInternalType('int', $user->id);
-        $this->assertInternalType('int', $otherUser->id);
+        $this->assertIsInt($user->id);
+        $this->assertIsInt($otherUser->id);
         // Clear to start
         Book::truncate();
         MysqlBook::truncate();
