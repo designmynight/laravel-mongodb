@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany as EloquentBelongsToMany;
 use Illuminate\Support\Arr;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
 
 class BelongsToMany extends EloquentBelongsToMany
 {

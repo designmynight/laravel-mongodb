@@ -4,7 +4,6 @@ namespace Jenssegers\Mongodb\Relations;
 
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Relations\MorphTo as EloquentMorphTo;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
 
 class MorphTo extends EloquentMorphTo
 {
