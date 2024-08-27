@@ -230,8 +230,8 @@ class EmbedsMany extends EmbedsOneOrMany
     protected function associateNew($model)
     {
         // Create a new key if needed.
-        if (!$model->getKey()) {
-            $model->setAttribute($model->getKeyName(), new ObjectID());
+        if ($model->getKeyName() === '_id' && !$model->getAttribute('_id')) {
+            $model->setAttribute('_id', new ObjectID);
         }
 
         $records = $this->getEmbedded();
