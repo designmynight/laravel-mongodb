@@ -124,6 +124,8 @@ class EmbedsMany extends EmbedsOneOrMany
      */
     public function associate(Model $model)
     {
+        $model->setParentRelation($this);
+
         if (!$this->contains($model)) {
             return $this->associateNew($model);
         }
