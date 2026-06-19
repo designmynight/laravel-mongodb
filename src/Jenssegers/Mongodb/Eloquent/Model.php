@@ -254,6 +254,26 @@ abstract class Model extends BaseModel
     }
 
     /**
+     * Get the model's original attribute values.
+     *
+     * Override Laravel 7's implementation which uses `new static()` to transform
+     * originals. That approach is incompatible with MongoDB embedded documents
+     * and breaks Mockery partial mocks (which don't expect __construct on new instances).
+     *
+     * @param string|null $key
+     * @param mixed $default
+     * @return mixed|array
+     */
+    public function getOriginal($key = null, $default = null)
+    {
+        if ($key) {
+            return Arr::get($this->original, $key, $default);
+        }
+
+        return $this->original;
+    }
+
+    /**
      * @inheritdoc
      */
     public function originalIsEquivalent($key, $current = null)
